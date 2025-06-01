@@ -79,6 +79,13 @@ web_modules/
 .env.production.local
 .env.local
 
+# Prisma generated files
+src/generated/prisma/
+*.so.node
+
+# Keep schema.prisma
+!prisma/schema.prisma
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
