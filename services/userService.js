@@ -50,7 +50,6 @@ async function createUser(username, email, password) {
     if(error instanceof AppError) {
       throw error;
     }
-
     throw new Error(`Failed to create user: ${error.message}`);
   }
 }
@@ -63,6 +62,9 @@ async function getAllUsers() {
     }
     return users
   } catch(error) {
+    if(error instanceof AppError) {
+      throw error
+    }
     throw new Error(error.message)
   }
 }
@@ -86,6 +88,9 @@ async function getUserById(id) {
     return user
 
   } catch(error) {
+    if (error instanceof AppError) {
+      throw error
+    }
     throw new Error("Failed to fetch user ", error.message )
   }
 }
@@ -148,6 +153,9 @@ async function updateEmail(id, email) {
       }
     })
   } catch (error) {
+    if(error instanceof AppError) {
+      throw error
+    }
     throw new Error("Error updating email ", error.message)
   }
 }
@@ -213,6 +221,9 @@ async function updateRole(id, role){
       }
     })
   } catch(error) {
+    if (error instanceof AppError) {
+      throw error
+    }
     throw new Error("Error updating role ", error.message)
   }
 }
