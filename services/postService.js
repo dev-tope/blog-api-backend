@@ -1,15 +1,15 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client.js";
 
 const prisma = new PrismaClient();
 
 async function createPost(id, title, content) {
   try {
     if(!id || isNaN(id)) {
-      throw new Error("Invalid user ID")
+      throw new AppError('Incalid User ID', 400)
     }
 
     if(!title || !content) {
-      throw new Error("Title and content are required");
+      throw new AppError('Title or Content cannot be empty', 400);
     }
   
     const post = await prisma.post.create({
@@ -31,7 +31,7 @@ async function createPost(id, title, content) {
 async function publishPost(id) {
   try {
     if(!id || isNaN(id)) {
-      throw new Error("Invalid user ID")
+      throw new AppError('Invalid Post ID', 400)
     }
   
     const post = await prisma.post.findUnique({
@@ -41,11 +41,11 @@ async function publishPost(id) {
     })
   
     if(!post){
-      throw new Error("Post not found")
+      throw new AppError('Post does not exist', 400)
     }
   
     if(post.isPublished) {
-      throw new Error("Post is already published");
+      throw new AppError('Post is already published', 400);
     }
   
     return await prisma.post.update({
@@ -66,7 +66,7 @@ async function getAllPosts(){
     const posts = await prisma.post.findMany()
 
     if(!posts.length) {
-      throw new Error("Posts not found")
+      throw new AppError('Posts not found', 404)
     }
 
     return posts;
@@ -78,7 +78,7 @@ async function getAllPosts(){
 async function getPostById(id){
   try {
     if(!id || isNaN(parseInt(id))){
-      throw new Error("Invalid user ID")
+      throw new AppError('Invalid user ID', 400)
     }
 
     const post = await prisma.post.findUnique({
@@ -86,7 +86,7 @@ async function getPostById(id){
     })
 
     if(!post){
-      throw new Error("Not Found")
+      throw new Error("Post Not Found", 404)
     }
 
     return post;
@@ -98,7 +98,7 @@ async function getPostById(id){
 async function getAllPostsByUserId(id) {
   try {
     if(!id || isNaN(parseInt(id))) {
-      throw new Error("Invalid user ID")
+      throw new AppError('Invalid user ID', 400)
     }
 
     const posts = await prisma.post.findMany({
@@ -108,7 +108,7 @@ async function getAllPostsByUserId(id) {
     })
 
     if(!posts.length){
-      throw new Error("Post Not Found")
+      throw new AppError('Post Not Found', 404)
     }
 
     return posts
@@ -121,7 +121,7 @@ async function getAllPostsByUserId(id) {
 async function getPublishedPostByUserId(id) {
   try {
     if(!id || isNaN(parseInt(id))){
-      throw new Error("Invalid user ID")
+      throw new AppError('Invalid user ID', 400)
     }
 
     const posts = await prisma.post.findMany({
@@ -132,7 +132,7 @@ async function getPublishedPostByUserId(id) {
     })
 
     if(!posts.length) {
-      throw new Error("Posts by user not found")
+      throw new AppError('Posts by user not found', 404)
     }
 
     return posts
@@ -144,7 +144,7 @@ async function getPublishedPostByUserId(id) {
 async function getDraftsByUserId(id) {
   try {
     if(!id || isNaN(parseInt(id))){
-      throw new Error("Invalid user ID")
+      throw new AppError('Invalid user ID', 400)
     }
 
     const drafts = await prisma.post.findMany({
@@ -155,7 +155,7 @@ async function getDraftsByUserId(id) {
     })
 
     if(!drafts.length) {
-      throw new Error("Drafts by user not found")
+      throw new AppError('Drafts by user not found', 404)
     }
 
     return drafts
@@ -167,11 +167,11 @@ async function getDraftsByUserId(id) {
 async function updateTitle(id, title) {
   try{
     if(!id || isNaN(parseInt(id))){
-      throw new Error("Invalid user ID")
+      throw new AppError('Invalid post ID', 400)
     }
   
     if(!title){
-      throw new Error("Title cannot be empty")
+      throw new Error('Title cannot be empty', 400)
     }
   
     return await prisma.post.update({
@@ -191,11 +191,11 @@ async function updateTitle(id, title) {
 async function updateContent(id, content) {
   try{
     if(!id || isNaN(parseInt(id))){
-      throw new Error("Invalid user ID")
+      throw new AppError('Invalid user ID', 400)
     }
   
     if(!content){
-      throw new Error("Content cannot be empty")
+      throw new AppError('Content cannot be empty', 401)
     }
   
     return await prisma.post.update({
@@ -213,7 +213,7 @@ async function updateContent(id, content) {
 
 async function deletePostById(id) {
   if(!id || isNaN(parseInt(id))){
-    throw new Error("Invalid user ID")
+    throw new AppError('Invalid user ID', 400)
   }
 
   return await prisma.post.delete({
