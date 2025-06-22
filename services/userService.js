@@ -244,6 +244,75 @@ async function deleteUserById(id){
   }
 }
 
+//user + post
+async function getAllPostsByUserId(id) {
+  try {
+    if(!id || isNaN(parseInt(id))) {
+      throw new AppError('Invalid user ID', 400)
+    }
+
+    const posts = await prisma.post.findMany({
+      where: {
+        userId: parseInt(id)
+      }
+    })
+
+    if(!posts.length){
+      throw new AppError('Post Not Found', 404)
+    }
+
+    return posts
+
+  } catch (error) {
+    throw new Error("Error fetching post by user: ", error.message)
+  }
+}
+
+async function getPublishedPostByUserId(id) {
+  try {
+    if(!id || isNaN(parseInt(id))){
+      throw new AppError('Invalid user ID', 400)
+    }
+
+    const posts = await prisma.post.findMany({
+      where: {
+        userId: parseInt(id),
+        isPublished: true,
+      }
+    })
+
+    if(!posts.length) {
+      throw new AppError('Posts by user not found', 404)
+    }
+
+    return posts
+  } catch (error) {
+    throw new Error("Error getting Posts by user: ", error.message)
+  }
+}
+
+async function getDraftsByUserId(id) {
+  try {
+    if(!id || isNaN(parseInt(id))){
+      throw new AppError('Invalid user ID', 400)
+    }
+
+    const drafts = await prisma.post.findMany({
+      where: {
+        userId: parseInt(id),
+        isPublished: false,
+      }
+    })
+
+    if(!drafts.length) {
+      throw new AppError('Drafts by user not found', 404)
+    }
+
+    return drafts
+  } catch (error) {
+    throw new Error("Error getting Drafts by user: ", error.message)
+  }
+}
 export {
   createUser,
   getAllUsers,
@@ -252,5 +321,8 @@ export {
   updateEmail,
   updatePassword,
   updateRole,
-  deleteUserById
+  deleteUserById,
+  getAllPostsByUserId,
+  getPublishedPostByUserId,
+  getDraftsByUserId,
 }

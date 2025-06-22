@@ -95,74 +95,7 @@ async function getPostById(id){
   }
 }
 
-async function getAllPostsByUserId(id) {
-  try {
-    if(!id || isNaN(parseInt(id))) {
-      throw new AppError('Invalid user ID', 400)
-    }
 
-    const posts = await prisma.post.findMany({
-      where: {
-        userId: parseInt(id)
-      }
-    })
-
-    if(!posts.length){
-      throw new AppError('Post Not Found', 404)
-    }
-
-    return posts
-
-  } catch (error) {
-    throw new Error("Error fetching post by user: ", error.message)
-  }
-}
-
-async function getPublishedPostByUserId(id) {
-  try {
-    if(!id || isNaN(parseInt(id))){
-      throw new AppError('Invalid user ID', 400)
-    }
-
-    const posts = await prisma.post.findMany({
-      where: {
-        userId: parseInt(id),
-        isPublished: true,
-      }
-    })
-
-    if(!posts.length) {
-      throw new AppError('Posts by user not found', 404)
-    }
-
-    return posts
-  } catch (error) {
-    throw new Error("Error getting Posts by user: ", error.message)
-  }
-}
-
-async function getDraftsByUserId(id) {
-  try {
-    if(!id || isNaN(parseInt(id))){
-      throw new AppError('Invalid user ID', 400)
-    }
-
-    const drafts = await prisma.post.findMany({
-      where: {
-        userId: parseInt(id),
-        isPublished: false,
-      }
-    })
-
-    if(!drafts.length) {
-      throw new AppError('Drafts by user not found', 404)
-    }
-
-    return drafts
-  } catch (error) {
-    throw new Error("Error getting Drafts by user: ", error.message)
-  }
-}
 
 async function updateTitle(id, title) {
   try{
@@ -223,15 +156,35 @@ async function deletePostById(id) {
   })
 }
 
+async function getCommentsByPostId(postId){
+  try {
+    if(!postId || isNaN(parseInt(postId))){
+      throw new AppError('Invalid Post ID', 400)
+    }
+
+    const comments = await prisma.comment.findMany({
+      where: {
+        postId,
+      },
+    })
+
+    if(!comments){
+      throw new AppError('Comments not found', 404)
+    }
+
+    return comments
+  } catch (error) {
+    throw new Error('Error fetching comments', error.message)
+  }
+}
+
 export {
   createPost,
   publishPost,
   getAllPosts,
   getPostById,
-  getAllPostsByUserId,
-  getPublishedPostByUserId,
-  getDraftsByUserId,
   updateTitle,
   updateContent,
   deletePostById,
+  getCommentsByPostId,
 }

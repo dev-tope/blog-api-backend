@@ -1,4 +1,5 @@
 import { PrismaClient } from "../src/generated/prisma/client.js";
+import AppError from "../utils/error.js";
 
 const prisma = new PrismaClient()
 
@@ -13,7 +14,7 @@ async function createComment(userId, postId, content) {
     }
 
     if(!content.length){
-      throw new AppError('Contet cannot be empty', 400)
+      throw new AppError('Content cannot be empty', 400)
     }
 
     return await prisma.comment.create({
@@ -24,33 +25,29 @@ async function createComment(userId, postId, content) {
       }
     })
   } catch (error) {
-    throw new Error('Error creating comment', error.message)
+    throw new Error(error)
   }
 }
 
-async function getCommentsByPostId(postId){
+async function deleteComment(id) {
   try {
-    if(!postId || isNaN(parseInt(postId))){
-      throw new AppError('Invalid Post ID', 400)
+    if(!id || isNaN(parseInt(id))) {
+      throw new AppError('Comment ID is invalid')
     }
 
-    const comments = await prisma.comment.findMany({
+    const deleteComment = await prisma.user.delete({
       where: {
-        postId,
-      },
-    })
+        id,
+      }
+    }) 
 
-    if(!comments){
-      throw new AppError('Comments not found', 404)
-    }
-
-    return comments
+    return deleteComment;
   } catch (error) {
-    throw new Error('Error fetching comments', error.message)
+    throw new Error('Error deleting comment', error.message)
   }
 }
 
 export {
   createComment,
-  getCommentsByPostId,
+  deleteComment,
 }

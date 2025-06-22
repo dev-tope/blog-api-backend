@@ -48,7 +48,8 @@ export async function updatePassword(req,res) {
 }
 
 export async function updateRole(req, res) {
-  const { id } = req.user || req.params;
+  console.log("I'm here")
+  const { id } = req.params;
   const { role } = req.body;
   const update = await userService.updateRole(id, role);
 
@@ -57,9 +58,29 @@ export async function updateRole(req, res) {
 
 export async function deleteUserById(req, res) {
   const { id } = req.params;
-  const deleted = await userService.deleteUserById(id);
+  await userService.deleteUserById(id);
+  res.status(200).json({ message: 'User deleted successfully' })
+}
 
-  res.status(200).json(deleted)
+export async function getAllPostsByUserId(req, res) {
+  const { id } = req.user;
+
+  const posts = await userService.getAllPostsByUserId(id);
+  res.status(200).json(posts);
+}
+
+export async function getPublishedPostsByUserId(req, res) {
+  const { id } = req.user;
+
+  const publishedPosts = await postService.getPublishedPostByUserId(id);
+  res.status(200).json(publishedPosts);
+}
+
+export async function getDraftsByUserId(req, res) {
+  const { id } = req.user;
+
+  const drafts = await postService.getDraftsByUserId(id);
+  res.status(200).json(drafts);
 }
 
 
